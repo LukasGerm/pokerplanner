@@ -1,0 +1,20 @@
+{
+  "variables": {
+    "NIXPACKS_NODE_VERSION": "22",
+    "NIXPACKS_SPA_CADDY": "false"
+  },
+  "phases": {
+    "install": {
+      "cmds": [
+        "npm install -g corepack@0.34.0 && corepack enable",
+        "pnpm install --frozen-lockfile"
+      ]
+    },
+    "build": {
+      "cmds": ["pnpm build"]
+    }
+  },
+  "start": {
+    "cmd": "node dist/server/server/index.js"
+  }
+}

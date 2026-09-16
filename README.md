@@ -42,6 +42,21 @@ Open `http://localhost:3000`. The same Node process serves the built frontend, W
 
 This follows Coolify's [Dockerfile deployment](https://coolify.io/docs/applications/builds/dockerfile) and [health check](https://coolify.io/docs/applications/configuration/health-checks) documentation. TLS terminates at the proxy; the container speaks HTTP internally. Do not expose a separate WebSocket port.
 
+### Nixpacks
+
+The root `nixpacks.json` also supports Coolify's **Nixpacks** build pack:
+
+1. Use port **3000**, one replica, and the same `APP_ORIGIN` setting described above.
+2. Leave custom install/build/start commands empty so the repository configuration applies. Turn off **Is it a static site?** if enabled.
+3. Configure the health check as `GET /healthz` on port **3000**.
+4. Redeploy the latest commit. If an old build plan is reused, redeploy without the build cache.
+
+The configuration selects Node 22, installs Corepack **0.34.0**, keeps the project's pinned pnpm **11.5.0**, installs with the frozen lockfile, builds the app, and starts the Node server directly. It disables Nixpacks' automatic Caddy setup for Vite SPAs so `/ws` reaches the WebSocket server. See the [Nixpacks Node provider](https://nixpacks.com/docs/providers/node) and [configuration reference](https://nixpacks.com/docs/configuration/file).
+
+If the install step fails with `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`, inspect the preceding Corepack install command. Nixpacks' default `corepack@0.24.1` cannot launch this pnpm version; the repository override must show `corepack@0.34.0`. The accompanying `$NIXPACKS_PATH` warning is separate from that startup failure.
+
+### Local Docker
+
 For local Docker testing:
 
 ```sh
